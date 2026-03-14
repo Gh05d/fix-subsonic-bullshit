@@ -23,7 +23,7 @@ Builds and deploys DLL + Info.json to Steam Deck via SCP. Requires `deck-direct`
 
 ## Gotchas
 
-- `GameInstall/` is a symlink to `~/Code/wrath-epic-buffing/GameInstall` — do not commit it
+- `GameInstall/` is a symlink to the game's managed DLLs — do not commit it. For dev setup, symlink to a local copy or to `../wrath-epic-buffing/GameInstall`
 - `GamePath.props` is machine-specific — excluded by .gitignore, each developer creates their own
 - `Assembly-CSharp.dll` and `Owlcat*.dll` are publicized (private field access). If you get CS0122 on other DLLs, add `Publicize="true"` to the csproj reference.
 - Pre-existing `findstr` warnings from build are normal on Linux — ignore them.
