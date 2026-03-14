@@ -2,8 +2,8 @@
     "Releases": [
         {
             "Id": "FixSubsonicBullshit",
-            "Version": "0.1.0",
-            "DownloadUrl": ""
+            "Version": "1.0.0",
+            "DownloadUrl": "https://github.com/Gh05d/fix-subsonic-bullshit/releases/download/v1.0.0/FixSubsonicBullshit-1.0.0.zip"
         }
     ]
 }
