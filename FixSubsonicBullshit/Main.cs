@@ -1,11 +1,19 @@
+using System;
 using HarmonyLib;
-using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using UnityModManagerNet;
 
 namespace FixSubsonicBullshit {
     static class Main {
         static Harmony harmony;
         static UnityModManager.ModEntry.ModLogger logger;
+
+        // Cap Constitution at 26 (base 18 + Advanced template +4 + Giant template +4)
+        // This prevents difficulty stat inflation from blowing up the DC
+        public const int ConstitutionCap = 26;
+
+        // CarnivorousCrystal_AreaEffect_SubsonicHum
+        public const string SubsonicHumAreaEffectGuid = "a89a5b1edba9c614b92a7ba7ab3f5a1d";
 
         static bool Load(UnityModManager.ModEntry modEntry) {
             logger = modEntry.Logger;
@@ -27,54 +35,42 @@ namespace FixSubsonicBullshit {
         public static void Verbose(string msg) => logger.Log(msg);
     }
 
-    [HarmonyPatch(typeof(RuleSavingThrow), nameof(RuleSavingThrow.OnTrigger))]
-    static class SubsonicHumDiagnosticPatch {
-        static void Postfix(RuleSavingThrow __instance) {
-            var reason = __instance.Reason;
-            if (reason?.Ability == null) return;
+    [HarmonyPatch(typeof(ContextActionSavingThrow), nameof(ContextActionSavingThrow.RunAction))]
+    static class SubsonicHumDCFix {
+        static void Prefix(ContextActionSavingThrow __instance) {
+            var context = __instance.Context;
+            if (context == null) return;
 
-            var blueprintName = reason.Ability.Blueprint?.name ?? "unknown";
+            // Match Subsonic Hum by blueprint GUID (check context and parent context)
+            string guid = context.AssociatedBlueprint?.AssetGuid.ToString();
+            string parentGuid = context.ParentContext?.AssociatedBlueprint?.AssetGuid.ToString();
 
-            // Log all saving throws in DEBUG builds
-            Main.Verbose($"[FSB] SavingThrow: ability={blueprintName}, " +
-                         $"DC={__instance.DifficultyClass}, " +
-                         $"type={__instance.Type}, " +
-                         $"passed={__instance.IsPassed}, " +
-                         $"roller={__instance.Initiator?.CharacterName ?? "?"}, " +
-                         $"caster={reason.Caster?.CharacterName ?? "?"}");
-
-            // Broad match for Subsonic Hum until GUID is known
-            if (!blueprintName.Contains("Subsonic") && !blueprintName.Contains("Hum"))
-                return;
-
-            Main.Log($"[FSB] === SUBSONIC HUM DETECTED ===");
-            Main.Log($"[FSB] Blueprint: {blueprintName} ({reason.Ability.Blueprint?.AssetGuid})");
-            Main.Log($"[FSB] Final DC: {__instance.DifficultyClass}");
-            Main.Log($"[FSB] Save Type: {__instance.Type}");
-            Main.Log($"[FSB] Passed: {__instance.IsPassed}");
-            Main.Log($"[FSB] D20 Roll: {__instance.D20}");
-            Main.Log($"[FSB] Roll Result (with mods): {__instance.RollResult}");
-            Main.Log($"[FSB] Roller: {__instance.Initiator?.CharacterName ?? "?"}");
-
-            // Context-level DC info
-            var ctx = reason.Context;
-            if (ctx != null) {
-                Main.Log($"[FSB] Context.Params.DC: {ctx.Params?.DC}");
-                Main.Log($"[FSB] Context.Params.CasterLevel: {ctx.Params?.CasterLevel}");
-                Main.Log($"[FSB] SpellLevel: {ctx.SpellLevel}");
-                Main.Log($"[FSB] SpellDescriptor: {ctx.SpellDescriptor}");
+            if (guid != Main.SubsonicHumAreaEffectGuid && parentGuid != Main.SubsonicHumAreaEffectGuid) {
+                // Fallback: match by name
+                string name = context.AssociatedBlueprint?.name
+                           ?? context.ParentContext?.AssociatedBlueprint?.name
+                           ?? "";
+                if (!name.Contains("SubsonicHum")) return;
             }
 
-            // Caster stats for DC calculation analysis
-            var caster = reason.Caster;
-            if (caster != null) {
-                Main.Log($"[FSB] Caster: {caster.CharacterName}");
-                var stats = caster.Stats;
-                Main.Log($"[FSB] Caster Constitution: {stats?.Constitution?.ModifiedValue}");
-                Main.Log($"[FSB] Caster Con Base: {stats?.Constitution?.BaseValue}");
-                Main.Log($"[FSB] Caster HD: {caster.Progression?.CharacterLevel}");
-                Main.Log($"[FSB] Caster CR: {caster.Progression?.MythicLevel}");
-            }
+            var caster = context.MaybeCaster;
+            if (caster == null) return;
+
+            int originalDC = context.Params.DC;
+
+            // Tabletop formula: DC = 10 + HD/2 + Con modifier
+            // Cap Constitution to prevent difficulty stat inflation
+            int con = caster.Stats.Constitution.ModifiedValue;
+            int cappedCon = Math.Min(con, Main.ConstitutionCap);
+            int conMod = (cappedCon - 10) / 2;
+            int hd = caster.Progression.CharacterLevel;
+            int fixedDC = 10 + (hd / 2) + conMod;
+
+            context.Params.DC = fixedDC;
+
+            Main.Log($"[FSB] Fixed Subsonic Hum DC: {originalDC} -> {fixedDC} " +
+                     $"(Con {con} capped to {cappedCon}, HD {hd}, " +
+                     $"caster: {caster.CharacterName})");
         }
     }
 }
