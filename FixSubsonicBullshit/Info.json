@@ -8,5 +8,6 @@
   "EntryMethod": "FixSubsonicBullshit.Main.Load",
   "AssemblyName": "FixSubsonicBullshit.dll",
   "Requirements": [],
-  "HomePage": ""
+  "Repository": "https://raw.githubusercontent.com/Gh05d/fix-subsonic-bullshit/master/Repository.json",
+  "HomePage": "https://github.com/Gh05d/fix-subsonic-bullshit"
 }

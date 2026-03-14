@@ -1,0 +1,47 @@
+[size=4][b]Fix Subsonic Bullshit[/b][/size]
+
+Fixes the broken DC calculation on Carnivorous Crystal's Subsonic Hum ability.
+
+[size=3][b]The Problem[/b][/size]
+
+Carnivorous Crystals use Subsonic Hum — an aura that forces a Fortitude save every round or be stunned. The tooltip shows DC 22 (the correct tabletop value), but the actual save DC is massively inflated depending on difficulty:
+
+[list]
+[*]Normal: DC ~32 (tooltip says 22)
+[*]Core: DC ~38-40 (tooltip says 22)
+[*]Unfair: DC ~52 (tooltip says 22)
+[/list]
+
+This happens because the game inflates creature stats (Constitution, Hit Dice) for difficulty, and the DC formula operates on these inflated values. Multiple crystals can permanently stunlock your entire party with an essentially unbeatable save.
+
+[size=3][b]The Fix[/b][/size]
+
+This mod recalculates the Subsonic Hum DC using the correct Pathfinder tabletop formula ([i]10 + HD/2 + Con modifier[/i]) but caps Constitution at 26 to prevent difficulty stat inflation from producing absurd DCs.
+
+[list]
+[*]Con cap of 26 = base 18 + Advanced template (+4) + Giant template (+4)
+[*]The DC still scales with creature variants (Standard, Advanced, Giant, Enhanced)
+[*]Only Subsonic Hum is affected — all other abilities remain unchanged
+[*]Works in both Real-Time with Pause and Turn-Based mode
+[/list]
+
+[size=3][b]Installation[/b][/size]
+
+[list=1]
+[*]Install [url=https://www.nexusmods.com/site/mods/21]Unity Mod Manager[/url] (0.23.0+)
+[*]Download the mod zip from the Files tab
+[*]Extract into [code]Mods/FixSubsonicBullshit/[/code] in your game directory
+[*]Enable in Unity Mod Manager
+[/list]
+
+[size=3][b]Compatibility[/b][/size]
+
+[list]
+[*]Pathfinder: Wrath of the Righteous 1.4+
+[*]Compatible with all other mods
+[*]No known conflicts
+[/list]
+
+[size=3][b]Source Code[/b][/size]
+
+[url=https://github.com/Gh05d/fix-subsonic-bullshit]GitHub Repository[/url]
