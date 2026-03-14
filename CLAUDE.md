@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Fix Subsonic Bullshit is a UMM mod for Pathfinder: Wrath of the Righteous that fixes the inflated DC calculation on Carnivorous Crystal Subsonic Hum ability.
+Fix Subsonic Bullshit is a UMM mod for Pathfinder: Wrath of the Righteous that fixes the inflated DC calculation on Carnivorous Crystal Subsonic Hum ability. Distributed via [Nexus Mods](https://www.nexusmods.com/pathfinderwrathoftherighteous/mods/949) and [GitHub](https://github.com/Gh05d/fix-subsonic-bullshit).
 
 ## Build
 
@@ -12,6 +12,15 @@ Fix Subsonic Bullshit is a UMM mod for Pathfinder: Wrath of the Righteous that f
 
 - `dotnet` is not on PATH — always use `~/.dotnet/dotnet`
 - `-p:SolutionDir` is required on Linux — without it, GamePath.props import fails silently
+
+**First-time setup:** Create `GameInstall/` with the game's `Wrath_Data/Managed/` DLLs, then create `GamePath.props`:
+```xml
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
+  <PropertyGroup>
+    <WrathInstallDir>$(SolutionDir)GameInstall</WrathInstallDir>
+  </PropertyGroup>
+</Project>
+```
 
 ## Deploy
 
