@@ -1,0 +1,15 @@
+GamePath.props
+GameInstall/
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.log
+*.pdb
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+.claude/
