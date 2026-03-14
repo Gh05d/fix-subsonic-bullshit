@@ -2,7 +2,7 @@
   "Id": "FixSubsonicBullshit",
   "DisplayName": "Fix Subsonic Bullshit",
   "Author": "Gh05d",
-  "Version": "0.1.0",
+  "Version": "1.0.0",
   "ManagerVersion": "0.23.0",
   "GameVersion": "1.4.0",
   "EntryMethod": "FixSubsonicBullshit.Main.Load",
