@@ -46,7 +46,7 @@ Builds and deploys DLL + Info.json to Steam Deck via SCP. Requires `deck-direct`
 Reads version from csproj, builds Release config, tags, creates GitHub release via `gh`, updates `Repository.json`. Requires `gh` CLI authenticated.
 
 - **Version bump workflow**: Bump `<Version>` in csproj + `Version` in `Info.json` → commit → run `release.sh` → upload zip to Nexus.
-- **Nexus upload**: Manual — download zip from GitHub release, upload at Nexus Files tab. Description BBCode in `docs/nexus-description.bbcode`, readme in `docs/nexus-readme.txt`.
+- **Nexus upload**: Automatic via GitHub Actions on release publish (`.github/workflows/nexus-upload.yml`). Description BBCode in `docs/nexus-description.bbcode`, readme in `docs/nexus-readme.txt`.
 
 ## Architecture
 
