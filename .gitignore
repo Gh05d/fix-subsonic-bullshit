@@ -14,3 +14,6 @@ GameInstall/
 !**/[Pp]ackages/build/
 .claude/
 .env
+
+# codegraph index (per-machine, regenerable)
+.codegraph/
