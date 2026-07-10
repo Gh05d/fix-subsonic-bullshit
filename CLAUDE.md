@@ -10,17 +10,7 @@ Fix Subsonic Bullshit is a UMM mod for Pathfinder: Wrath of the Righteous that f
 ~/.dotnet/dotnet build FixSubsonicBullshit/FixSubsonicBullshit.csproj -p:SolutionDir=$(pwd)/
 ```
 
-- `dotnet` is not on PATH — always use `~/.dotnet/dotnet`
-- `-p:SolutionDir` is required on Linux — without it, GamePath.props import fails silently
-
-**First-time setup:** Create `GameInstall/` with the game's `Wrath_Data/Managed/` DLLs, then create `GamePath.props`:
-```xml
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
-  <PropertyGroup>
-    <WrathInstallDir>$(SolutionDir)GameInstall</WrathInstallDir>
-  </PropertyGroup>
-</Project>
-```
+**First-time setup:** `GameInstall/` (symlink to `../wrath-epic-buffing/GameInstall` works) + `GamePath.props` with `<WrathInstallDir>$(SolutionDir)GameInstall</WrathInstallDir>` — see parent `wrath-mods/CLAUDE.md` §Common Build Setup.
 
 ## Deploy
 
@@ -32,10 +22,8 @@ Builds and deploys DLL + Info.json to Steam Deck via SCP. Requires `deck-direct`
 
 ## Gotchas
 
-- `GameInstall/` is a symlink to the game's managed DLLs — do not commit it. For dev setup, symlink to a local copy or to `../wrath-epic-buffing/GameInstall`
-- `GamePath.props` is machine-specific — excluded by .gitignore, each developer creates their own
+- `GameInstall/` and `GamePath.props` are machine-specific — gitignored, never commit
 - `Assembly-CSharp.dll` and `Owlcat*.dll` are publicized (private field access). If you get CS0122 on other DLLs, add `Publicize="true"` to the csproj reference.
-- Pre-existing `findstr` warnings from build are normal on Linux — ignore them.
 
 ## Release & Distribution
 
@@ -59,6 +47,4 @@ Single-file mod (`Main.cs`). Patches `ContextActionSavingThrow.RunAction()` with
 
 ## Code Style
 
-- K&R brace style (opening brace on same line)
-- 4-space indentation
-- `var` when type is apparent
+- Shared style (K&R, 4-space, `var`): parent `wrath-mods/CLAUDE.md` §Code Style
