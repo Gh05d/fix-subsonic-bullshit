@@ -4,13 +4,15 @@
 
 Fix Subsonic Bullshit is a UMM mod for Pathfinder: Wrath of the Righteous that fixes the inflated DC calculation on Carnivorous Crystal Subsonic Hum ability. Distributed via [Nexus Mods](https://www.nexusmods.com/pathfinderwrathoftherighteous/mods/949) and [GitHub](https://github.com/Gh05d/fix-subsonic-bullshit).
 
+Shared build/deploy/Nexus/release rules: → parent `wrath-mods/CLAUDE.md` (§Common Build Setup, §Steam Deck Deployment, §Nexus Mods, §Release Process).
+
 ## Build
 
 ```bash
 ~/.dotnet/dotnet build FixSubsonicBullshit/FixSubsonicBullshit.csproj -p:SolutionDir=$(pwd)/
 ```
 
-**First-time setup:** `GameInstall/` (symlink to `../wrath-epic-buffing/GameInstall` works) + `GamePath.props` with `<WrathInstallDir>$(SolutionDir)GameInstall</WrathInstallDir>` — see parent `wrath-mods/CLAUDE.md` §Common Build Setup.
+First-time setup (`GameInstall/` symlink + `GamePath.props` with `<WrathInstallDir>$(SolutionDir)GameInstall</WrathInstallDir>`, publicized `Assembly-CSharp*.dll`/`Owlcat*.dll`): → parent §Common Build Setup.
 
 ## Deploy
 
@@ -18,12 +20,7 @@ Fix Subsonic Bullshit is a UMM mod for Pathfinder: Wrath of the Righteous that f
 ./deploy.sh
 ```
 
-Builds and deploys DLL + Info.json to Steam Deck via SCP. Requires `deck-direct` SSH alias.
-
-## Gotchas
-
-- `GameInstall/` and `GamePath.props` are machine-specific — gitignored, never commit
-- `Assembly-CSharp.dll` and `Owlcat*.dll` are publicized (private field access). If you get CS0122 on other DLLs, add `Publicize="true"` to the csproj reference.
+Ships DLL + Info.json only. Rules: → parent §Steam Deck Deployment.
 
 ## Release & Distribution
 
@@ -31,10 +28,11 @@ Builds and deploys DLL + Info.json to Steam Deck via SCP. Requires `deck-direct`
 ./release.sh
 ```
 
-Reads version from csproj, builds Release config, tags, creates GitHub release via `gh`, updates `Repository.json`. Requires `gh` CLI authenticated.
+Reads version from csproj, builds Release config, tags, creates GitHub release via `gh`, updates `Repository.json`. Requires `gh` CLI authenticated. (This repo has no `/release` command — `release.sh` replaces it.)
 
-- **Version bump workflow**: Bump `<Version>` in csproj + `Version` in `Info.json` → commit → run `release.sh` → upload zip to Nexus.
-- **Nexus upload**: Automatic via GitHub Actions on release publish (`.github/workflows/nexus-upload.yml`). Description BBCode in `docs/nexus-description.bbcode`, readme in `docs/nexus-readme.txt`.
+- **Version bump workflow**: Bump `<Version>` in `FixSubsonicBullshit/FixSubsonicBullshit.csproj` + `Version` in `FixSubsonicBullshit/Info.json` → commit → run `release.sh` → Nexus upload runs automatically via GitHub Actions (→ parent §Nexus Mods).
+- `release.sh` aborts on dirty tree / existing tag, pushes `master` BEFORE the Release build, and commits `Repository.json` itself — don't pre-edit Repository.json.
+- Nexus mod-page description BBCode in `docs/nexus-description.bbcode`, readme in `docs/nexus-readme.txt`.
 
 ## Architecture
 
@@ -47,4 +45,4 @@ Single-file mod (`Main.cs`). Patches `ContextActionSavingThrow.RunAction()` with
 
 ## Code Style
 
-- Shared style (K&R, 4-space, `var`): parent `wrath-mods/CLAUDE.md` §Code Style
+- Shared style (K&R, 4-space, `var`): → parent §Code Style
